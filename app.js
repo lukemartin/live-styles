@@ -1,4 +1,9 @@
-var files = ['styles.css'];
+var files = process.argv.splice(2);
+
+if(files.length === 0) {
+    console.log('No files specified. Try \'node app.js styles.css morestyles.css\'');
+    return;
+}
 
 var WebSocketServer = require('websocket').server;
 var http = require('http');
@@ -14,36 +19,33 @@ wsServer = new WebSocketServer({
 
 // WebSocket server
 wsServer.on('request', function(request) {
-    var connection = request.accept(null, request.origin);
+    var connection = request.accept(null, request.origin),
+        fs = require('fs');
 
-    // This is the most important callback for us, we'll handle
-    // all messages from users here.
-    connection.on('message', function(message) {
-        if (message.type === 'utf8') {
-            // process WebSocket message
-        }
-    });
+    console.log('- Connection opened');
 
     connection.on('close', function(connection) {
         // close user connection
-        //fs.unwatchFile('styles.css');
+        console.log('- Connection closed');
         for(var i=0;i<files.length;i++) {
             fs.unwatchFile(files[i]);
         }
+        console.log('-------------------------------------');
     });
 
-    var fs = require('fs');
-    var D = require('util').debug;
+    console.log('- Watching the following file(s) for changes: ' + files.join(', '));
 
-    for(var i=0;i<files.length;i++) {
-        fs.watchFile(files[i], {interval: 1}, function(curr, prev) {
-            if(curr.mtime > prev.mtime) {
-                //console.log('file updated, reloading');
-                connection.send(1);
-            }
-        });
+    for(var i = 0; i < files.length; i++) {
+        // anonymous function - sorry!
+        (function(z) {
+            fs.watchFile(files[z], {interval: 1}, function(curr, prev) {
+                if(curr.mtime > prev.mtime) {
+                    console.log('- CHANGE DETECTED on file ' + files[z] + '. Sending reload request');
+                    connection.send(1);
+                }
+            });
+        })(i);
     }
-
 });
 
 
