@@ -17,6 +17,8 @@ wsServer = new WebSocketServer({
     httpServer: server
 });
 
+console.log('- Hello :) Server is set up. Waiting for connections');
+
 // WebSocket server
 wsServer.on('request', function(request) {
     var connection = request.accept(null, request.origin),
