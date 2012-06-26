@@ -14,8 +14,16 @@ Add the following line to the bottom of your html page/template
 
 ## Usage
 
-    node PATH_TO_LIVE_STYLES/app.js [STYLESHEETS, ]
+    node PATH_TO_LIVE_STYLES/app.js [STYLESHEETS, ] <PORT>
 
 eg
 
     node js/live-styles/app.js css/styles.css css/morestyles.css
+
+## Using a custom port ##
+
+The app and client will default to port 1337 unless specified when running app.js, eg:
+
+    node js/live-styles/app.js css/styles.css css/morestyles.css 1338
+
+If you specify a custom port, you must **remember to update client.js** so it will attempt to connect on your new port, and not the default 1337.

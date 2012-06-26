@@ -1,4 +1,8 @@
-var files = process.argv.splice(2);
+var args = process.argv.splice(2),
+    files = args,
+    port = 1337;
+
+if(/^([\d]+)$/m.test(args[args.length - 1])) port = files.splice(files.length - 1);
 
 if(files.length === 0) {
     console.log('No files specified. Try \'node app.js styles.css morestyles.css\'');
@@ -10,7 +14,7 @@ var http = require('http');
 
 var server = http.createServer(function(request, response) {
 });
-server.listen(1337, function() { });
+server.listen(port, function() { });
 
 // create the server
 wsServer = new WebSocketServer({
@@ -18,6 +22,7 @@ wsServer = new WebSocketServer({
 });
 
 console.log('- Hello :) Server is set up. Waiting for connections');
+if(port !== 1337) console.log('- Don\'t forget to tell client.js to connect to port ' + port + ' :)');
 
 // WebSocket server
 wsServer.on('request', function(request) {
